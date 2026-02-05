@@ -1,6 +1,4 @@
-from connection import collection
-from pprint import pprint
-# from app.connection import collection
+from app.connection import collection
 
 
 def respone_builder(documents):
@@ -63,5 +61,35 @@ def get_employees_by_age_or_seniority():
     return response
 
 
-print(get_employees_by_age_or_seniority())
+def get_managers_excluding_departments():
+    query = {
+    'job_role.title': 'Manager',
+    'job_role.department': {'$nin': ['Sales', 'Marketing']}
+    }
+
+    documents = collection.find(query)
+    response = respone_builder(documents)
+    return response
+
+
+def get_employees_by_lastname_and_age():
+    query = {
+        '$or' :[ 
+            {'name': {'$regex': 'Nelson$'}}, # at the end of the name = last name
+            {'name':{'$regex': 'Wright$'}}
+        ]
+    } 
+
+
+    projection = {
+        '_id': 0,'name': 1,'age': 1,'job_role.department': 1
+    }
+
+    documents = collection.find(query, projection)
+    response = respone_builder(documents)
+    return response
+
+
+
+
 
